@@ -47,7 +47,7 @@ def main():
 				zip.printdir()
 				zip.extractall(path=home_directory)
 		except:
-			raise ValueError("Can't move into that directory.")
+			raise ValueError("Can't move into that directory")
 
 # Build GUI ------------------------------------------------------------
 

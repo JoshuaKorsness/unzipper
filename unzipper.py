@@ -12,21 +12,22 @@ def search_for_file_path(text_box=""):
     return tempdir
 
 # RETHINK THIS SECTION. There has to be a way to put this output functiosn into serach_for_file_path
+# Prints to parent folder text box
 def parent_output():
 	text = search_for_file_path()
 	# Clear text box if requried
 	parent_txt.delete("1.0", tk.END)
 	parent_txt.insert("1.0", text)
 
+# Prints to destination folder text box
 def dest_output():
 	text = search_for_file_path()
 	dest_txt.delete("1.0", tk.END)
 	dest_txt.insert("1.0", text)
 
-# Returns all filepaths with .zip files
+# Returns all filepaths in directory with .zip files
 def get_all_file_paths(directory):
-	print(f"Directory: {directory}")
-
+	# Initialize lists for appending
 	file_paths = []
 	roots = []
 	zip_files = []
@@ -34,38 +35,36 @@ def get_all_file_paths(directory):
 	#crawl through directory. os.walk generates file names. 
 	for root, directories, files in os.walk(directory):
 		for filename in files:
-			print(f"Filename: {filename}")
 			if filename.endswith('.zip'):
-				# Join the two strings in order to form full filepath
+				# Log roots, filenames, and full file paths
 				roots.append(root)
 				zip_files.append(filename)
 				filepath = os.path.join(root, filename)
 				file_paths.append(filepath)
-	print(f"file_paths: {file_paths}")
 	return file_paths, roots, zip_files
 
 def main():
-	# Path to folder which needs to be zipped
+	# Get parent and destination paths
 	home_directory = parent_txt.get("1.0", tk.END).rstrip()
-	# print(f"Home Direct: {home_directory}")
 	dest_directory = dest_txt.get("1.0", tk.END).rstrip()
 
 	# Calling function to get filepaths
 	file_paths, roots, zip_files = get_all_file_paths(home_directory)
-	print(f"Filepaths: {file_paths}")
 	text.insert(tk.END, "The files listed below have been unzipped: ")
-	for filename in file_paths:
-		print(file_paths) 
-
+	# Unzip each file
 	for i in range(len(file_paths)):
 		try:
+			# Change to relevant working directory
 			os.chdir(roots[i])
+			# Unzip
 			with ZipFile(zip_files[i], 'r') as zip:
-				text.insert(tk.END, f"\n{file_paths[i]}")
-				zip.printdir()
-				zip.extractall(path=dest_directory)
+				text.insert(tk.END, f"\n{file_paths[i]}")	# Displays unzipped fiels in GUI
+				zip.printdir()								# Prints nice table to console
+				zip.extractall(path=dest_directory)			# Unzip to directory
 		except:
 			raise ValueError("Can't move into that directory")
+	# Print new line for next run
+	text.insert(tk.END, "\n")
 
 # Build GUI ------------------------------------------------------------
 
